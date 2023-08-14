@@ -1,5 +1,7 @@
 package lib
 
+import "core:fmt"
+
 import glm "core:math/linalg/glsl"
 
 Sprite :: struct {
@@ -39,12 +41,23 @@ scale_sprite :: proc{
     scale_sprite_uniform
 }
 
-render_sprite :: proc(sprite: ^Sprite, camera: ^Camera) {
+render_sprite :: proc(sprite: ^Sprite, camera: ^Camera, frame: u32 = 0) {
     use_shader(sprite.shader.id)
 
     bind_texture(&sprite.texture)
     bind_sprite_mesh(&sprite.mesh)
     bind_camera(camera, &sprite.shader)
+
+    set_uniform(
+        sprite.shader.uv_scale_location,
+        sprite.texture.uv_scale
+    )
+
+    offset := calculate_offset_for_frame(&sprite.texture, frame)
+    set_uniform(
+        sprite.shader.frame_offset_location,
+        offset
+    )
 
     set_uniform(
         sprite.shader.transformation_location,

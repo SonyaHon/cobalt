@@ -1,5 +1,7 @@
 package lib
 
+import glm "core:math/linalg/glsl"
+
 import gl "vendor:OpenGL"
 import stb "vendor:stb/image"
 
@@ -33,10 +35,29 @@ SpriteMesh :: struct {
 
 Texture :: struct {
     id: u32,
+    total_frames: u32,
+    frames_horizontal: u32,
+    frames_vertical: u32,
+    frame_width: f32,
+    frame_height: f32,
+    uv_scale: glm.vec2,
 }
 
-make_texture :: proc(path: cstring) -> Texture {
-    texture := Texture{}
+calculate_offset_for_frame :: proc(texture: ^Texture, frame: u32) -> glm.vec2 {
+    frame := frame % texture.total_frames
+
+    x := frame %  texture.frames_horizontal
+    y := frame / texture.frames_horizontal
+
+    return glm.vec2{ f32(x) * texture.frame_width ,  f32(y) * texture.frame_height }
+}
+
+make_texture :: proc(path: cstring, frames_horizontal: u32 = 1, frames_vertical: u32 = 1) -> Texture {
+    texture := Texture{ 
+        frames_horizontal = frames_horizontal,
+        frames_vertical = frames_vertical,
+        total_frames = frames_horizontal * frames_vertical,
+    }
 
     width, height, channgels: i32
     img_data := stb.load(path, &width, &height, &channgels, 0)
@@ -51,6 +72,10 @@ make_texture :: proc(path: cstring) -> Texture {
     gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
     gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, img_data)
     gl.GenerateMipmap(gl.TEXTURE_2D)
+
+    texture.frame_width = 1.0 / f32(frames_horizontal)
+    texture.frame_height = 1.0 / f32(frames_vertical)
+    texture.uv_scale = glm.vec2{texture.frame_width, texture.frame_height}
 
     return texture
 }

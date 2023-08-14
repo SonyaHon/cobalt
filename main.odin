@@ -40,23 +40,30 @@ main :: proc() {
 
 	sprite := gfx.Sprite {
 		mesh = gfx.make_sprite_mesh(),
-		texture = gfx.make_texture("assets/textures/idle.png"),
+		texture = gfx.make_texture("assets/textures/idle.png", 10, 1),
 		shader = gfx.make_shader("shaders/basic.vertex.glsl", "shaders/basic.fragment.glsl"),
 		position = glm.vec2{0, 0},
 		rotation = 0,
 		scale = glm.vec2{1, 1}
 	}
 
+	frame: u32 = 0
+	tick := 0
 
 	for !gfx.should_close(window) {
 		gfx.cls()
 
 		// Update 
-		gfx.rotate_sprite(&sprite, 1)
-		gfx.transform_camera(&camera, glm.vec3{0, 0, 0.02})
+		// gfx.rotate_sprite(&sprite, 1)
+		// gfx.transform_camera(&camera, glm.vec3{0, 0, 0.02})
+		if tick >= 5 {
+			frame += 1
+			tick = 0
+		}
+		tick += 1
 
 		// Render
-		gfx.render_sprite(&sprite, &camera)
+		gfx.render_sprite(&sprite, &camera, frame)
 
 		gfx.ups(window)
 	}

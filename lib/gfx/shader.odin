@@ -11,10 +11,12 @@ import gl "vendor:OpenGL"
 SHADER_BASIC: u32 = 0
 
 Shader :: struct {
-	id: u32,
-	projection_location: i32,
-	view_location: i32,
+	id:                      u32,
+	projection_location:     i32,
+	view_location:           i32,
 	transformation_location: i32,
+	uv_scale_location:       i32,
+	frame_offset_location:   i32,
 }
 
 make_shader :: proc(vertex_path: string, fragment_path: string) -> Shader {
@@ -23,6 +25,8 @@ make_shader :: proc(vertex_path: string, fragment_path: string) -> Shader {
 	shader.projection_location = get_projection_matrix_location(shader.id)
 	shader.view_location = get_view_matrix_location(shader.id)
 	shader.transformation_location = get_transformation_matrix_location(shader.id)
+	shader.uv_scale_location = get_uv_scale_location(shader.id)
+	shader.frame_offset_location = get_frame_offset_location(shader.id)
 
 	return shader
 }
@@ -87,13 +91,26 @@ get_view_matrix_location :: proc(shader: u32) -> i32 {
 	return gl.GetUniformLocation(shader, "view_matrix")
 }
 
+get_uv_scale_location :: proc(shader: u32) -> i32 {
+	return gl.GetUniformLocation(shader, "uv_scale")
+}
+
+get_frame_offset_location :: proc(shader: u32) -> i32 {
+	return gl.GetUniformLocation(shader, "frame_offset")
+}
+
 set_uniform_matrix4f :: proc(location: i32, mat: glm.mat4x4) {
 	matrix_data := matrix_flatten(mat)
 	gl.UniformMatrix4fv(location, 1, false, ([^]f32)(&matrix_data))
 }
 
+set_uniform_vec2f :: proc(location: i32, vec: glm.vec2) {
+	gl.Uniform2f(location, vec.x, vec.y)
+}
+
 set_uniform :: proc {
-	set_uniform_matrix4f
+	set_uniform_matrix4f,
+	set_uniform_vec2f,
 }
 
 use_shader :: proc(shader: u32) {
