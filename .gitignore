@@ -1,0 +1,5 @@
+.backup
+.vscode
+.cobalt.dSYM
+cobalt
+.DS_Store
