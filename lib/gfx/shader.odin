@@ -8,7 +8,8 @@ import glm "core:math/linalg/glsl"
 import gl "vendor:OpenGL"
 
 ShadersStruct :: struct {
-	Basic: Shader,
+	Textured: Shader,
+	Colored:  Shader,
 }
 
 Shaders := ShadersStruct{}
@@ -20,16 +21,22 @@ Shader :: struct {
 	transformation_location: i32,
 	uv_scale_location:       i32,
 	frame_offset_location:   i32,
+	color_location:          i32,
 }
 
-make_shader :: proc(vertex_path: string, fragment_path: string) -> Shader {
+make_shader :: proc(path: string) -> Shader {
 	shader := Shader{}
+
+	vertex_path := strings.concatenate([]string{"shaders/", path, ".vertex.glsl"})
+	fragment_path := strings.concatenate([]string{"shaders/", path, ".fragment.glsl"})
+
 	link_program(&shader.id, vertex_path, fragment_path)
 	shader.projection_location = get_projection_matrix_location(shader.id)
 	shader.view_location = get_view_matrix_location(shader.id)
 	shader.transformation_location = get_transformation_matrix_location(shader.id)
 	shader.uv_scale_location = get_uv_scale_location(shader.id)
 	shader.frame_offset_location = get_frame_offset_location(shader.id)
+	shader.color_location = get_color_location(shader.id)
 
 	return shader
 }
@@ -79,7 +86,8 @@ link_program :: proc(target: ^u32, vertex_path: string, fragment_path: string) {
 }
 
 load_shaders :: proc() {
-	Shaders.Basic = make_shader("shaders/basic.vertex.glsl", "shaders/basic.fragment.glsl")
+	Shaders.Textured = make_shader("textured")
+	Shaders.Colored = make_shader("colored")
 }
 
 get_transformation_matrix_location :: proc(shader: u32) -> i32 {
@@ -102,6 +110,10 @@ get_frame_offset_location :: proc(shader: u32) -> i32 {
 	return gl.GetUniformLocation(shader, "frame_offset")
 }
 
+get_color_location :: proc(shader: u32) -> i32 {
+	return gl.GetUniformLocation(shader, "color")
+}
+
 set_uniform_matrix4f :: proc(location: i32, mat: glm.mat4x4) {
 	matrix_data := matrix_flatten(mat)
 	gl.UniformMatrix4fv(location, 1, false, ([^]f32)(&matrix_data))
@@ -111,9 +123,14 @@ set_uniform_vec2f :: proc(location: i32, vec: glm.vec2) {
 	gl.Uniform2f(location, vec.x, vec.y)
 }
 
+set_uniform_vec3f :: proc(location: i32, vec: glm.vec3) {
+	gl.Uniform3f(location, vec.x, vec.y, vec.z)
+}
+
 set_uniform :: proc {
 	set_uniform_matrix4f,
 	set_uniform_vec2f,
+	set_uniform_vec3f,
 }
 
 use_shader :: proc(shader: u32) {

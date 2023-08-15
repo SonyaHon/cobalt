@@ -4,17 +4,37 @@ import "core:fmt"
 
 import glm "core:math/linalg/glsl"
 
+SpriteType :: enum {
+    Textured,
+    Colored,
+}
+
 Sprite :: struct {
+    type:     SpriteType,
 	mesh:     SpriteMesh,
 	texture:  Texture,
+    color:    glm.vec3,
 	shader:   Shader,
 	position: glm.vec2,
 	rotation: f32,
-	scale:   glm.vec2,
+	scale:    glm.vec2,
 }
 
-make_sprite_default :: proc(texture: Texture, shader: Shader,) -> Sprite {
+make_colored_sprite :: proc(color: glm.vec3, shader: Shader) -> Sprite {
     return Sprite {
+        type = SpriteType.Colored,
+        mesh = make_sprite_mesh(),
+        color = color,
+        shader = shader,
+        position = glm.vec2{0, 0},
+        rotation = 0,
+        scale = glm.vec2{1, 1}
+    }
+}
+
+make_textured_sprite :: proc(texture: Texture, shader: Shader) -> Sprite {
+    return Sprite {
+        type = SpriteType.Textured,
         mesh = make_sprite_mesh(),
         texture = texture,
         shader = shader,
@@ -24,32 +44,9 @@ make_sprite_default :: proc(texture: Texture, shader: Shader,) -> Sprite {
     }
 }
 
-make_sprite_with_position :: proc(texture: Texture, shader: Shader, position: glm.vec2) -> Sprite {
-    return Sprite {
-        mesh = make_sprite_mesh(),
-        texture = texture,
-        shader = shader,
-        position = position,
-        rotation = 0,
-        scale = glm.vec2{1, 1}
-    }
-}
-
-make_sprite_setting_all :: proc(texture: Texture, shader: Shader, position: glm.vec2, rotation: f32, scale: glm.vec2) -> Sprite {
-    return Sprite {
-        mesh = make_sprite_mesh(),
-        texture = texture,
-        shader = shader,
-        position = position,
-        rotation = rotation,
-        scale = scale
-    }
-}
-
 make_sprite :: proc {
-    make_sprite_default,
-    make_sprite_setting_all,
-    make_sprite_with_position,
+    make_textured_sprite,
+    make_colored_sprite,
 }
 
 set_sprite_position :: proc(sprite: ^Sprite, position: glm.vec2) {
@@ -83,20 +80,23 @@ scale_sprite :: proc{
 render_sprite :: proc(sprite: ^Sprite, camera: ^Camera, frame: u32 = 0) {
     use_shader(sprite.shader.id)
 
-    bind_texture(&sprite.texture)
     bind_sprite_mesh(&sprite.mesh)
     bind_camera(camera, &sprite.shader)
 
-    set_uniform(
-        sprite.shader.uv_scale_location,
-        sprite.texture.uv_scale
-    )
-
-    offset := calculate_offset_for_frame(&sprite.texture, frame)
-    set_uniform(
-        sprite.shader.frame_offset_location,
-        offset
-    )
+    switch sprite.type {
+        case .Colored: 
+            set_uniform(sprite.shader.color_location, sprite.color)
+        case .Textured:
+            bind_texture(&sprite.texture)
+            set_uniform(
+                sprite.shader.uv_scale_location,
+                sprite.texture.uv_scale
+            )
+            set_uniform(
+                sprite.shader.frame_offset_location,
+                calculate_offset_for_frame(&sprite.texture, frame)
+            )
+    }
 
     set_uniform(
         sprite.shader.transformation_location,
