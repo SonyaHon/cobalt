@@ -9,6 +9,8 @@ PROJECTION_MATRIX := glm.mat4Perspective(
     100.0
 )
 
+MainCamera := make_camera()
+
 Camera :: struct {
 	position: glm.vec3,
 }

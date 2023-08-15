@@ -13,6 +13,45 @@ Sprite :: struct {
 	scale:   glm.vec2,
 }
 
+make_sprite_default :: proc(texture: Texture, shader: Shader,) -> Sprite {
+    return Sprite {
+        mesh = make_sprite_mesh(),
+        texture = texture,
+        shader = shader,
+        position = glm.vec2{0, 0},
+        rotation = 0,
+        scale = glm.vec2{1, 1}
+    }
+}
+
+make_sprite_with_position :: proc(texture: Texture, shader: Shader, position: glm.vec2) -> Sprite {
+    return Sprite {
+        mesh = make_sprite_mesh(),
+        texture = texture,
+        shader = shader,
+        position = position,
+        rotation = 0,
+        scale = glm.vec2{1, 1}
+    }
+}
+
+make_sprite_setting_all :: proc(texture: Texture, shader: Shader, position: glm.vec2, rotation: f32, scale: glm.vec2) -> Sprite {
+    return Sprite {
+        mesh = make_sprite_mesh(),
+        texture = texture,
+        shader = shader,
+        position = position,
+        rotation = rotation,
+        scale = scale
+    }
+}
+
+make_sprite :: proc {
+    make_sprite_default,
+    make_sprite_setting_all,
+    make_sprite_with_position,
+}
+
 set_sprite_position :: proc(sprite: ^Sprite, position: glm.vec2) {
     sprite.position = position
 }

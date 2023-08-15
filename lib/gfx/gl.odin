@@ -5,6 +5,12 @@ import glm "core:math/linalg/glsl"
 import gl "vendor:OpenGL"
 import stb "vendor:stb/image"
 
+TexturesStruct :: struct {
+    PlayerIdle: Texture,
+}
+
+Textures := TexturesStruct{}
+
 VERTICES := [?]f32 {
     0.5,  0.5, 0,  // top right
     0.5, -0.5, 0,  // bottom right
@@ -129,4 +135,8 @@ destroy_sprite :: proc(sprite: ^SpriteMesh) {
     gl.DeleteBuffers(1, &sprite.uvs_vbo)
     gl.DeleteBuffers(1, &sprite.indices_vbo)
     gl.DeleteVertexArrays(1, &sprite.vao)
+}
+
+load_textures :: proc() {
+    Textures.PlayerIdle = make_texture("assets/textures/idle.png", 10, 1)
 }

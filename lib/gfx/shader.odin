@@ -7,8 +7,11 @@ import "core:strings"
 import glm "core:math/linalg/glsl"
 import gl "vendor:OpenGL"
 
+ShadersStruct :: struct {
+	Basic: Shader,
+}
 
-SHADER_BASIC: u32 = 0
+Shaders := ShadersStruct{}
 
 Shader :: struct {
 	id:                      u32,
@@ -76,7 +79,7 @@ link_program :: proc(target: ^u32, vertex_path: string, fragment_path: string) {
 }
 
 load_shaders :: proc() {
-	link_program(&SHADER_BASIC, "shaders/basic.vertex.glsl", "shaders/basic.fragment.glsl")
+	Shaders.Basic = make_shader("shaders/basic.vertex.glsl", "shaders/basic.fragment.glsl")
 }
 
 get_transformation_matrix_location :: proc(shader: u32) -> i32 {
