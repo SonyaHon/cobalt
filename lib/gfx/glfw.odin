@@ -3,7 +3,7 @@ package lib
 import "core:fmt"
 import "core:os"
 import "core:runtime"
-import "core:math/linalg"
+import glm "core:math/linalg/glsl"
 
 import "vendor:glfw"
 import open_gl "vendor:OpenGL"
@@ -13,11 +13,29 @@ glfw_error_callback :: proc "c" (code: i32, description: cstring) {
 	fmt.printf("GLFW Exception [%d]:\n%s", code, description)
 }
 
+RESIZE_CALLBACK : proc() = nil
+
+glfw_resize_callback :: proc "c" (window: glfw.WindowHandle, width, height: i32) {
+	context = runtime.default_context()
+	SCREEN_HEIGHT = height
+	SCREEN_WIDTH = width
+
+	open_gl.Viewport(0, 0, width, height)
+	PROJECTION_MATRIX = glm.mat4Ortho3d(0, f32(SCREEN_WIDTH), 0, f32(SCREEN_HEIGHT), 0.1, 10.0)
+
+	if RESIZE_CALLBACK != nil {
+		RESIZE_CALLBACK()
+	}
+}
+
 OPENG_GL_MAJOR :: 4
 OPENG_GL_MINOR :: 1
 GLFW_TRUE :: 1
 
 CLEAR_COLOR := [3]f32{0, 0, 0}
+
+SCREEN_WIDTH: i32 = 800
+SCREEN_HEIGHT: i32 = 600
 
 create_window :: proc(name: cstring, width: i32, height: i32) -> glfw.WindowHandle {
 	if glfw.Init() == 0 {
@@ -34,11 +52,16 @@ create_window :: proc(name: cstring, width: i32, height: i32) -> glfw.WindowHand
 	glfw.WindowHint(glfw.RESIZABLE, GLFW_TRUE)
 
 	window := glfw.CreateWindow(width, height, name, nil, nil)
+	SCREEN_WIDTH = width
+	SCREEN_HEIGHT = height
+
 	if window == nil {
 		fmt.eprintf("Error during window initialization")
 		glfw.Terminate()
 		os.exit(1)
 	}
+
+	glfw.SetFramebufferSizeCallback(window, glfw_resize_callback)
 
 	glfw.MakeContextCurrent(window)
 	open_gl.load_up_to(OPENG_GL_MAJOR, OPENG_GL_MINOR, glfw.gl_set_proc_address)
@@ -75,4 +98,8 @@ ups :: proc(window: glfw.WindowHandle) {
 terminate :: proc(window: glfw.WindowHandle) {
 	glfw.DestroyWindow(window)
 	glfw.Terminate()
+}
+
+get_time :: proc() -> f64 {
+	return glfw.GetTime()
 }

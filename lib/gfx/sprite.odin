@@ -77,6 +77,10 @@ scale_sprite :: proc{
     scale_sprite_uniform
 }
 
+render_animated_sprite :: proc(sprite: ^Sprite, camera: ^Camera, animation: ^Animation) {
+    render_sprite(sprite, camera, animation.current_frame)
+}
+
 render_sprite :: proc(sprite: ^Sprite, camera: ^Camera, frame: u32 = 0) {
     use_shader(sprite.shader.id)
 
