@@ -5,13 +5,6 @@ import glm "core:math/linalg/glsl"
 
 import "lib/gfx"
 
-player_update :: proc(player: ^gfx.Sprite) {
-	if player.position.y >= -0.015 {
-		player.position.y -= 0.05
-		fmt.printf("Player falling\n")
-	}
-}
-
 main :: proc() {
 	window := gfx.create_window("Carbon", 800, 600)
 	defer gfx.terminate(window)
@@ -21,25 +14,21 @@ main :: proc() {
 	gfx.set_cls_color(0, 0, 0)
 
 	player := gfx.make_sprite(gfx.Textures.PlayerIdle, gfx.Shaders.Textured)
-	gfx.set_sprite_position(&player, glm.vec2{0.0, 0.3})
-	gfx.scale_sprite(&player, 0.2)
+	gfx.scale_sprite(&player, 48 * 2)
+	gfx.set_sprite_position(&player, glm.vec2{400, 300})
 
-	ground := gfx.make_sprite(glm.vec3{0.933,0.769,0.529}, gfx.Shaders.Colored)
-	gfx.set_sprite_position(&ground, glm.vec2{0.0, -0.4})
-	gfx.scale_sprite(&ground, glm.vec2{1, 0.5})
-
-	frame: u32 = 0
-	tick := 0
+	ruler := gfx.make_sprite(glm.vec3{0, 0.5, 1.0}, gfx.Shaders.Colored)
+	gfx.scale_sprite(&ruler, glm.vec2{100, 100})
+	gfx.set_sprite_position(&ruler, glm.vec2{400, 300})
 
 	for !gfx.should_close(window) {
 		gfx.cls()
 
 		// Update
-		player_update(&player)
 
 		// Render
-		gfx.render_sprite(&ground, &gfx.MainCamera)
-		gfx.render_sprite(&player, &gfx.MainCamera, frame)
+		gfx.render_sprite(&ruler, &gfx.MainCamera)
+		gfx.render_sprite(&player, &gfx.MainCamera)
 
 		gfx.ups(window)
 	}

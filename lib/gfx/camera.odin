@@ -2,13 +2,7 @@ package lib
 
 import glm "core:math/linalg/glsl"
 
-PROJECTION_MATRIX := glm.mat4Perspective(
-    glm.radians_f32(45),
-    8 / 6,
-    0.1, 
-    100.0
-)
-
+PROJECTION_MATRIX := glm.mat4Ortho3d(0, 800, 0, 600, 0.1, 10.0)
 MainCamera := make_camera()
 
 Camera :: struct {
