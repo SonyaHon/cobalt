@@ -28,7 +28,7 @@ make_colored_sprite :: proc(color: glm.vec3, shader: Shader) -> Sprite {
         shader = shader,
         position = glm.vec2{0, 0},
         rotation = 0,
-        scale = glm.vec2{1, 1}
+        scale = glm.vec2{1.0, 1.0}
     }
 }
 

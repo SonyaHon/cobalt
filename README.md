@@ -9,5 +9,6 @@
 [ ] Add sound handling
 [ ] Add font rendering
 
+[X] Add makefile for prod & debug builds
 [X] Add `Animation`. This will be used to defined an animation. Will probably require to introduce `time_elapsed`
 [X] Add window resize fixes

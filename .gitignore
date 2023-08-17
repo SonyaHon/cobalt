@@ -1,5 +1,7 @@
 .backup
 .vscode
 cobalt.dSYM
+cobalt.debug.dSYM
 cobalt
+cobalt.debug
 .DS_Store

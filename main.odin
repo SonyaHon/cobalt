@@ -1,7 +1,12 @@
 package main
 
 import "core:fmt"
+import "core:os"
 import glm "core:math/linalg/glsl"
+
+import tt "vendor:stb/truetype"
+import fs "vendor:fontstash"
+import gl "vendor:OpenGL"
 
 import "lib/gfx"
 
@@ -9,12 +14,21 @@ import "lib/gfx"
 player: gfx.Sprite
 player_idle_animation: gfx.Animation
 
+init :: proc() {
+	gfx.initialize_text_rendering()
+}
+
+terminate :: proc() {
+	gfx.terminate_text_rendering()
+}
+
 update :: proc(time_elapsed: f64) {
 	gfx.update_animation(&player_idle_animation, time_elapsed)
 }
 
 render :: proc() {
 	gfx.render_animated_sprite(&player, &gfx.MainCamera, &player_idle_animation)
+	gfx.render_text(100, 100, "Hello, Cobalt!")
 }
 
 main :: proc() {
@@ -37,6 +51,15 @@ main :: proc() {
 
 	time_elapsed: f64 = 0
 
+	file, ok := os.read_entire_file("assets/fonts/REMOFA.otf")
+	font_info := tt.fontinfo{}
+
+	tt.InitFont(&font_info, ([^]byte)(&file), 0)
+	ascent, descent, line_gap: i32
+
+	tt.GetFontVMetrics(&font_info, &ascent, &descent, &line_gap)
+
+	init()
 	for !gfx.should_close(window) {
 		start := gfx.get_time()
 		gfx.cls()
@@ -50,4 +73,5 @@ main :: proc() {
 		gfx.ups(window)
 		time_elapsed = (gfx.get_time() - start) * 1000
 	}
+	terminate()
 }
