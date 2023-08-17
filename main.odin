@@ -44,20 +44,20 @@ main :: proc() {
 	gfx.load_textures()
 	gfx.set_cls_color(0, 0, 0)
 
-	player_idle_animation = gfx.make_animation(true, 1000, 10)
+	player_idle_animation = gfx.make_animation(true, 600, 10)
 	player = gfx.make_sprite(gfx.Textures.PlayerIdle, gfx.Shaders.Textured)
 	gfx.scale_sprite(&player, 48 * 2)
 	gfx.set_sprite_position(&player, glm.vec2{400, 300})
 
 	time_elapsed: f64 = 0
 
-	file, ok := os.read_entire_file("assets/fonts/REMOFA.otf")
-	font_info := tt.fontinfo{}
+	// file, ok := os.read_entire_file("assets/fonts/REMOFA.otf")
+	// font_info := tt.fontinfo{}
 
-	tt.InitFont(&font_info, ([^]byte)(&file), 0)
-	ascent, descent, line_gap: i32
+	// tt.InitFont(&font_info, ([^]byte)(&file), 0)
+	// ascent, descent, line_gap: i32
 
-	tt.GetFontVMetrics(&font_info, &ascent, &descent, &line_gap)
+	// tt.GetFontVMetrics(&font_info, &ascent, &descent, &line_gap)
 
 	init()
 	for !gfx.should_close(window) {
