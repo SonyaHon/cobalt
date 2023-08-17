@@ -40,13 +40,8 @@ main :: proc() {
 	for !gfx.should_close(window) {
 		start := gfx.get_time()
 		gfx.cls()
-
-		// Update
 		update(time_elapsed)
-
-		// Render
 		render()
-
 		gfx.ups(window)
 		time_elapsed = (gfx.get_time() - start) * 1000
 	}

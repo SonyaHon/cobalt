@@ -46,8 +46,6 @@ create_window :: proc(name: cstring, width: i32, height: i32) -> glfw.WindowHand
 	glfw.WindowHint(glfw.RESIZABLE, GLFW_TRUE)
 
 	window := glfw.CreateWindow(width, height, name, nil, nil)
-	SCREEN_WIDTH = width
-	SCREEN_HEIGHT = height
 
 	if window == nil {
 		fmt.eprintf("Error during window initialization")
@@ -61,6 +59,17 @@ create_window :: proc(name: cstring, width: i32, height: i32) -> glfw.WindowHand
 	open_gl.load_up_to(OPENG_GL_MAJOR, OPENG_GL_MINOR, glfw.gl_set_proc_address)
 	open_gl.Enable(open_gl.BLEND)
 	open_gl.BlendFunc(open_gl.SRC_ALPHA, open_gl.ONE_MINUS_SRC_ALPHA)
+
+	SCREEN_WIDTH, SCREEN_HEIGHT = glfw.GetFramebufferSize(window)
+	open_gl.Viewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+	PROJECTION_MATRIX = glm.mat4Ortho3d(0, f32(SCREEN_WIDTH), 0, f32(SCREEN_HEIGHT), 0.1, 10.0)
+
+	fmt.printf(
+		"Open GL version: %s\nWindow size: %dx%d\n",
+		open_gl.GetString(open_gl.VERSION),
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT,
+	)
 
 	return window
 }
