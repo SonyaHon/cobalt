@@ -9,6 +9,10 @@ SpriteType :: enum {
     Colored,
 }
 
+SPRITE_POSITION_CENTER :: proc () -> glm.vec2 {
+    return glm.vec2{f32(SCREEN_WIDTH) / 2, f32(SCREEN_HEIGHT) / 2}
+}
+
 Sprite :: struct {
     type:     SpriteType,
 	mesh:     SpriteMesh,
@@ -47,6 +51,10 @@ make_textured_sprite :: proc(texture: Texture, shader: Shader) -> Sprite {
 make_sprite :: proc {
     make_textured_sprite,
     make_colored_sprite,
+}
+
+destroy_sprite :: proc(sprite: ^Sprite) {
+    destroy_sprite_mesh(&sprite.mesh)
 }
 
 set_sprite_position :: proc(sprite: ^Sprite, position: glm.vec2) {

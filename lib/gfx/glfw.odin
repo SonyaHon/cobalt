@@ -13,8 +13,6 @@ glfw_error_callback :: proc "c" (code: i32, description: cstring) {
 	fmt.printf("GLFW Exception [%d]:\n%s", code, description)
 }
 
-RESIZE_CALLBACK : proc() = nil
-
 glfw_resize_callback :: proc "c" (window: glfw.WindowHandle, width, height: i32) {
 	context = runtime.default_context()
 	SCREEN_HEIGHT = height
@@ -22,10 +20,6 @@ glfw_resize_callback :: proc "c" (window: glfw.WindowHandle, width, height: i32)
 
 	open_gl.Viewport(0, 0, width, height)
 	PROJECTION_MATRIX = glm.mat4Ortho3d(0, f32(SCREEN_WIDTH), 0, f32(SCREEN_HEIGHT), 0.1, 10.0)
-
-	if RESIZE_CALLBACK != nil {
-		RESIZE_CALLBACK()
-	}
 }
 
 OPENG_GL_MAJOR :: 4

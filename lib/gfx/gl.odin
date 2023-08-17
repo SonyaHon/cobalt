@@ -130,7 +130,7 @@ draw_sprite_mesh :: proc() {
     gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, nil)
 }
 
-destroy_sprite :: proc(sprite: ^SpriteMesh) {
+destroy_sprite_mesh :: proc(sprite: ^SpriteMesh) {
     gl.DeleteBuffers(1, &sprite.vertices_vbo)
     gl.DeleteBuffers(1, &sprite.uvs_vbo)
     gl.DeleteBuffers(1, &sprite.indices_vbo)
